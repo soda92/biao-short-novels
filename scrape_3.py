@@ -1,57 +1,59 @@
 from pathlib import Path
-import requests
-
+import requests  # noqa: F401
+import glob
 from bs4 import BeautifulSoup
-import re
+import json
+import time
+from scrape_1 import read_path, write_path, clean_file_dir  # noqa: F401
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15"
 }
 
 
-url = "http://mp.weixin.qq.com/s?__biz=Mzg4NTc2OTYxMQ==&mid=2247484365&idx=1&sn=2e8a3e1016e7ea5b46613ff888372472&chksm=cfa29729f8d51e3ffce20c1aa4cc6de1d7e125d4a09fc3e8534916083b6fa831a8252ceacd38#rd"
+def parse(url, msgid):
+    # r = requests.get(url=url, headers=headers)
+    # assert r.status_code == 200
+    # Path(f"generated_html/{msgid}.html").write_bytes(r.content)
 
-r = requests.get(url=url, headers=headers)
+    # code adapted from: https://github.com/Ziheng-Liang/wechat_web_scraper/blob/e8030244323c7f9cb4cf6d87b1244861ab691057/selenium/singlePage.py#L8-L20
+    html = read_path(Path(f"generated_html/{msgid}.html"))
+    soup = BeautifulSoup(html, "html.parser")
 
-print(r.status_code)
+    contents = soup.find_all("div", "rich_media_content")[0].contents
+    content = "\n\n".join(map(lambda x: x.text, contents))
 
-Path("s_2.html").write_bytes(r.content)
-
-
-html = Path("s_2.html").read_text(encoding="utf8")
-soup = BeautifulSoup(html, "html.parser")
-texts = soup.findAll(string=True)
-
-
-def visible(element):
-    if element.parent.name in ["style", "script", "[document]", "head", "title"]:
-        return False
-    elif re.match("<!--.*-->", element):
-        return False
-    return True
-
-
-visible_texts = list(filter(visible, texts))
-
-visible_texts = visible_texts[: visible_texts.index("预览时标签不可点")]
-t = "".join(visible_texts)
-
-while "\n\n\n" in t:
-    t = t.replace("\n\n\n", "\n\n")
-v = list(
-    map(
-        lambda x: x.strip().replace("\n", "\n\n"),
-        filter(lambda x: x != "", t.split("\n\n")),
-    )
-)
-
-title = v[0].replace(" | ", "-")
-content = "\n\n".join(title[3:])
-
-p = f"""+++
-date = 'date'
-title = '{v[0]}'
+    p = f"""+++
+date = '$date'
+title = '$title'
 +++
 
-{content}
-"""
+{content}"""
+    return p
+
+
+if __name__ == "__main__":
+    # clean_file_dir(Path("generated_markdown/a.md"))
+
+    G_count = 0
+    files = list(sorted(glob.glob("generated_json/*.json"), reverse=True))
+
+    for file in files:
+        obj1 = json.loads(read_path(Path(file)))
+        for article in obj1["getalbum_resp"]["article_list"]:
+            title = article["title"]
+            url = article["url"]
+            msgid = article["msgid"]
+            date = article["create_time"]
+
+            body = parse(url, msgid)
+
+            md_name = title.replace(" | ", "-")
+            write_path(Path(f"generated_markdown/{md_name}.md"), body)
+
+            G_count += 1
+            # for testing
+            if G_count >= 1:
+                exit()
+
+            time.sleep(10)
