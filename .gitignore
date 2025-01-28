@@ -1,2 +1,6 @@
 /*.lock
 /public
+
+/generated*
+
+__pycache__
