@@ -1,3 +1,4 @@
+from pathlib import Path
 import requests
 
 headers = {
@@ -9,7 +10,7 @@ args = {
     "__biz": "",
     "album_id": "3329839945947119618",
     "count": "10",
-    "begin_msgid": "2247484370",
+    "begin_msgid": "2247484420",
     "begin_itemidx": "1",
     "uin": "",
     "key": "",
@@ -26,4 +27,6 @@ r = requests.get(
     url="https://mp.weixin.qq.com/mp/appmsgalbum", headers=headers, params=args
 )
 
-print(r.status_code, r.json())
+print(r.status_code)
+
+Path("s0.json").write_bytes(r.content)
