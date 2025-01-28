@@ -12,9 +12,9 @@ headers = {
 
 
 def parse(url, msgid):
-    # r = requests.get(url=url, headers=headers)
-    # assert r.status_code == 200
-    # Path(f"generated_html/{msgid}.html").write_bytes(r.content)
+    r = requests.get(url=url, headers=headers)
+    assert r.status_code == 200
+    Path(f"generated_html/{msgid}.html").write_bytes(r.content)
 
     # code adapted from: https://github.com/Ziheng-Liang/wechat_web_scraper/blob/e8030244323c7f9cb4cf6d87b1244861ab691057/selenium/singlePage.py#L8-L20
     html = read_path(Path(f"generated_html/{msgid}.html"))
@@ -45,15 +45,22 @@ if __name__ == "__main__":
             url = article["url"]
             msgid = article["msgid"]
             date = article["create_time"]
+            import datetime
+
+            date = datetime.datetime.fromtimestamp(int(date))
+            date = date.isoformat() + "+08:00"
 
             body = parse(url, msgid)
+            body = body.replace("$date", date)
+            body = body.replace("$title", title)
 
             md_name = title.replace(" | ", "-")
             write_path(Path(f"generated_markdown/{md_name}.md"), body)
 
             G_count += 1
             # for testing
-            if G_count >= 1:
-                exit()
+            # if G_count >= 1:
+            #     exit()
 
             time.sleep(10)
+            print(md_name)
