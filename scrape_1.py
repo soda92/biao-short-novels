@@ -14,4 +14,4 @@ r = requests.get(
     url="https://mp.weixin.qq.com/mp/appmsgalbum", headers=headers, params=args0
 )
 
-Path("s_m.html").write_bytes(r.content)
+Path("start.html").write_bytes(r.content)

@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 
-content = Path("s_m.html").read_text(encoding="utf8")
+content = Path("start.html").read_text(encoding="utf8")
 
 pattern = '<span class="js_article_create_time album__item-info-item">([0-9]*)</span>'
 t = re.findall(pattern, content)[0]
@@ -48,7 +48,7 @@ structure = (
                 "url": "{url}",
                 "user_read_status": "0"
             }
-        }
+        ]
     }
 }""".replace("{t}", t)
     .replace("{img}", img)
@@ -58,3 +58,6 @@ structure = (
 )
 
 print(structure)
+
+Path("json").mkdir(parents=True, exist_ok=True)
+Path("json").joinpath(msgid + ".json").write_text(structure, encoding="utf8")
