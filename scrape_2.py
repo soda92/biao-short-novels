@@ -2,6 +2,7 @@ from pathlib import Path
 import requests
 import json
 import time
+from scrape_1 import write_path, read_path
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15"
@@ -62,19 +63,20 @@ def write(obj):
     msgid = get_last_msgid(obj)
     print(msgid)
 
-    Path(f"json/{msgid}.json").write_text(
-        json.dumps(obj, indent=2, ensure_ascii=False), encoding="utf8"
+    write_path(
+        Path(f"generated_json/{msgid}.json"),
+        json.dumps(obj, indent=2, ensure_ascii=False),
     )
 
 
 if __name__ == "__main__":
     import glob
 
-    f = list(sorted(glob.glob("json/*.json"), reverse=True))
+    f = list(sorted(glob.glob("generated_json/*.json"), reverse=True))
     assert len(f) == 1
 
-    f = f[0]
-    r = json.loads(Path(f).read_text(encoding="utf8"))
+    f = Path(f[0])
+    r = json.loads(read_path(f))
 
     msgid = get_last_msgid(r)
     print(msgid)
@@ -85,13 +87,11 @@ if __name__ == "__main__":
         write(obj)
         time.sleep(10)
 
-        f = list(sorted(glob.glob("json/*.json")))
-        latest = Path(f[0]).read_text(encoding="utf8")
+        f = list(sorted(glob.glob("generated_json/*.json")))
+        latest = read_path(Path(f[0]))
 
         r = json.loads(latest)
-
         msgid = get_last_msgid(r)
-
         obj = get(msgid)
 
     print("finished")

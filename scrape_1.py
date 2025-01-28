@@ -4,6 +4,20 @@ import shutil
 import requests
 
 
+def clean_file_dir(file: Path):
+    if file.parent.exists():
+        shutil.rmtree(file.parent)
+    file.parent.mkdir(exist_ok=True)
+
+
+def read_path(file: Path):
+    return file.read_text(encoding="utf8")
+
+
+def write_path(file: Path, content: str):
+    file.write_text(content, encoding="utf8")
+
+
 def get():
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15"
@@ -18,12 +32,16 @@ def get():
         url="https://mp.weixin.qq.com/mp/appmsgalbum", headers=headers, params=args0
     )
 
-    Path("start.html").write_bytes(r.content)
+    assert r.status_code == 200
+
+    dest = Path("generated_html/start.html")
+    clean_file_dir(dest)
+    write_path(dest, r.content.decode())
 
 
 get()
 
-content = Path("start.html").read_text(encoding="utf8")
+content = Path("generated_html/start.html").read_text(encoding="utf8")
 
 pattern = '<span class="js_article_create_time album__item-info-item">([0-9]*)</span>'
 t = re.findall(pattern, content)[0]
@@ -81,6 +99,6 @@ structure = (
 
 print(structure)
 
-shutil.rmtree("json")
-Path("json").mkdir(parents=True, exist_ok=True)
-Path("json").joinpath(msgid + ".json").write_text(structure, encoding="utf8")
+dst = Path("generated_json").joinpath(f"{msgid}.json")
+clean_file_dir(dst)
+write_path(dst, structure)
