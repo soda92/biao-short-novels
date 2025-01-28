@@ -1,0 +1,12 @@
+languageCode: 'zh-hans'
+title: "你的鸟儿会唱歌"
+theme: "PaperMod"
+
+languages:
+  en:
+    languageName: "Chinese Simplified"
+    menu:
+      main:
+        - name: Index
+          url: index0
+          weight: 5
