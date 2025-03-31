@@ -78,12 +78,7 @@ def get_latest_json_file_content(json_dir: Path):
     return r
 
 
-def scrape_2():
-    C = Path(__file__).resolve().parent
-    R = C.parent
-    json_dir = R.joinpath("generated_json")
-
-
+def get_all_json(json_dir:Path):
     r = get_latest_json_file_content(json_dir=json_dir)
     msgid = get_last_msgid(r)
     print(msgid)
@@ -92,7 +87,7 @@ def scrape_2():
 
     while "article_list" in obj["getalbum_resp"]:
         write(obj, json_dir)
-        time.sleep(10)
+        time.sleep(10) # reduce server pressure
 
         r = get_latest_json_file_content(json_dir=json_dir)
         msgid = get_last_msgid(r)

@@ -1,4 +1,5 @@
 "parse the first html, then convert it to json"
+
 from pathlib import Path
 import re
 import requests
@@ -88,10 +89,6 @@ def convert_html_to_json(html_file: Path, json_dir: Path):
     write_path(dst, structure)
 
 
-def scrape_1():
-    C = Path(__file__).resolve().parent
-    R = C.parent
-    get(R.joinpath("generated_html/start.html"))
-    convert_html_to_json(
-        R.joinpath("generated_html/start.html"), R.joinpath("generated_json")
-    )
+def get_first(html_dir: Path, json_dir: Path):
+    get(html_dir.joinpath("start.html"))
+    convert_html_to_json(html_file=html_dir.joinpath("start.html"), json_dir=json_dir)

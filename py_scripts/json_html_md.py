@@ -1,23 +1,24 @@
 "get html for all json articles, then convert it to markdown"
+
 from pathlib import Path
 import requests
 import glob
 from bs4 import BeautifulSoup
 import json
 import time
-from sodatools import read_path, write_path
+from sodatools import read_path, write_path, str_path
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15"
 }
 
 
-def parse(url, msgid):
+def fetch_url_and_convert_to_md(url, msgid, html_dir: Path):
     r = requests.get(url=url, headers=headers)
     assert r.status_code == 200
-    Path(f"generated_html/{msgid}.html").write_bytes(r.content)
+    html_dir.joinpath(f"{msgid}.html").write_bytes(r.content)
 
-    html = read_path(Path(f"generated_html/{msgid}.html"))
+    html = read_path(html_dir.joinpath(f"{msgid}.html"))
     soup = BeautifulSoup(html, "html.parser")
 
     contents = soup.find_all("div", "rich_media_content")[0].contents
@@ -32,16 +33,16 @@ title = '$title'
     return p
 
 
-def scrape_3():
-    # clean_file_dir(Path("generated_markdown/a.md"))
-
-    G_count = 0
-    files = list(sorted(glob.glob("generated_json/*.json"), reverse=True))
+def json_html_md(json_dir: Path, html_dir: Path, markdown_dir: Path):
+    files = list(sorted(glob.glob("*.json"), root_dir=str_path(json_dir), reverse=True))
 
     for file in files:
-        obj1 = json.loads(read_path(Path(file)))
+        obj1 = json.loads(read_path(json_dir.joinpath(file)))
         for article in obj1["getalbum_resp"]["article_list"]:
             title = article["title"]
+            md_name = title.replace(" | ", "-")
+            if markdown_dir.joinpath(f"{md_name}.md").exists():
+                continue
             url = article["url"]
             msgid = article["msgid"]
             date = article["create_time"]
@@ -50,17 +51,11 @@ def scrape_3():
             date = datetime.datetime.fromtimestamp(int(date))
             date = date.isoformat() + "+08:00"
 
-            body = parse(url, msgid)
+            body = fetch_url_and_convert_to_md(url, msgid, html_dir=html_dir)
             body = body.replace("$date", date)
             body = body.replace("$title", title)
 
-            md_name = title.replace(" | ", "-")
-            write_path(Path(f"generated_markdown/{md_name}.md"), body)
+            write_path(markdown_dir.joinpath(f"{md_name}.md"), body)
 
-            G_count += 1
-            # for testing
-            # if G_count >= 1:
-            #     exit()
-
-            time.sleep(10)
+            time.sleep(10)  # reduce server pressure
             print(md_name)
