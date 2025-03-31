@@ -112,6 +112,11 @@ def get_all_json(json_dir: Path):
             break
         else:
             write(obj, json_dir)
-            break
+            check_last = get_last_msgid(obj)
+            if msgid_already_downloaded(check_last, json_dir=json_dir):
+                title = obj["getalbum_resp"]["article_list"][-1]["title"]
+                print(f"json list last file {title} already exists. end json download")
+                break
+            # break # assume one update not exceed 20 novels
 
     print("finished")
