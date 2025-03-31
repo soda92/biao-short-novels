@@ -15,7 +15,13 @@ headers = {
 
 def fetch_url_and_convert_to_md(url, msgid, html_dir: Path):
     r = requests.get(url=url, headers=headers)
-    assert r.status_code == 200
+    retry = 1
+    while r.status_code != 200 and retry < 5:
+        retry += 1
+        r = requests.get(url=url, headers=headers)
+    if r.status_code != 200:
+        print(r"fetch {url} error")
+        exit(-1)
     html_dir.joinpath(f"{msgid}.html").write_bytes(r.content)
 
     html = read_path(html_dir.joinpath(f"{msgid}.html"))
@@ -34,7 +40,7 @@ title = '$title'
 
 
 def json_html_md(json_dir: Path, html_dir: Path, markdown_dir: Path):
-    files = list(sorted(glob.glob("*.json"), root_dir=str_path(json_dir), reverse=True))
+    files = list(sorted(glob.glob("*.json", root_dir=str_path(json_dir)), reverse=True))
 
     for file in files:
         obj1 = json.loads(read_path(json_dir.joinpath(file)))
@@ -57,5 +63,5 @@ def json_html_md(json_dir: Path, html_dir: Path, markdown_dir: Path):
 
             write_path(markdown_dir.joinpath(f"{md_name}.md"), body)
 
-            time.sleep(10)  # reduce server pressure
             print(md_name)
+            time.sleep(10)  # reduce server pressure
