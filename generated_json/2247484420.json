@@ -1,0 +1,31 @@
+
+{
+  "base_resp": {
+    "exportkey_token": "",
+    "ret": 0
+  },
+  "getalbum_resp": {
+    "article_list": [
+      {
+        "cover_img_1_1": "https://mmbiz.qpic.cn/mmbiz_jpg/4q8J3pWcWxY5kdfia4XEPk8xU97DYDbwkATUUF8W99ZOZVNpChCic828SLOAPC1C7nsVzPLKdc7PRoRicTggesSEA/300",
+        "cover_theme_color": {
+          "b": "30",
+          "g": "35",
+          "r": "31"
+        },
+        "create_time": "1737943200",
+        "is_pay_subscribe": "0",
+        "is_read": "0",
+        "item_show_type": "0",
+        "itemidx": "1",
+        "key": "3885769611_2247484415_1",
+        "msgid": "2247484420",
+        "pos_num": "76",
+        "title": "78 | 微型小说《浪荡子》",
+        "tts_is_ban": "0",
+        "url": "http://mp.weixin.qq.com/s?__biz=Mzg4NTc2OTYxMQ==&mid=2247484420&idx=1&sn=1061c47ee29005f31fad5342e2133a48&chksm=cfa290e0f8d519f63932961775405b963397e497d7e91282cdafc98132e34635b151db2edb53#rd",
+        "user_read_status": "0"
+      }
+    ]
+  }
+}
