@@ -1,3 +1,4 @@
+"get html for all json articles, then convert it to markdown"
 from pathlib import Path
 import requests
 import glob
@@ -16,7 +17,6 @@ def parse(url, msgid):
     assert r.status_code == 200
     Path(f"generated_html/{msgid}.html").write_bytes(r.content)
 
-    # code adapted from: https://github.com/Ziheng-Liang/wechat_web_scraper/blob/e8030244323c7f9cb4cf6d87b1244861ab691057/selenium/singlePage.py#L8-L20
     html = read_path(Path(f"generated_html/{msgid}.html"))
     soup = BeautifulSoup(html, "html.parser")
 

@@ -1,8 +1,10 @@
+"from the first json, get all json"
 from pathlib import Path
 import requests
 import json
 import time
-from .scrape_1 import write_path, read_path
+from sodatools import write_path, read_path, str_path
+import glob
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15"
@@ -30,7 +32,7 @@ def get_last_msgid(obj):
     return obj["getalbum_resp"]["article_list"][-1]["msgid"]
 
 
-def get(msgid):
+def download_json_from(msgid):
     args = {
         "action": "getalbum",
         "__biz": "",
@@ -59,39 +61,41 @@ def get(msgid):
     return r2
 
 
-def write(obj):
-    msgid = get_last_msgid(obj)
+def write(json_obj, destdir: Path):
+    msgid = get_last_msgid(json_obj)
     print(msgid)
 
     write_path(
-        Path(f"generated_json/{msgid}.json"),
-        json.dumps(obj, indent=2, ensure_ascii=False),
+        destdir.joinpath(f"{msgid}.json"),
+        json.dumps(json_obj, indent=2, ensure_ascii=False),
     )
+
+def get_latest_json_file_content(json_dir: Path):
+    f = list(sorted(glob.glob("*.json", root_dir=str_path(json_dir)), reverse=True))
+
+    f = json_dir.joinpath(f[0])
+    r = json.loads(read_path(f))
+    return r
 
 
 def scrape_2():
-    import glob
+    C = Path(__file__).resolve().parent
+    R = C.parent
+    json_dir = R.joinpath("generated_json")
 
-    f = list(sorted(glob.glob("generated_json/*.json"), reverse=True))
-    assert len(f) == 1
 
-    f = Path(f[0])
-    r = json.loads(read_path(f))
-
+    r = get_latest_json_file_content(json_dir=json_dir)
     msgid = get_last_msgid(r)
     print(msgid)
 
-    obj = get(msgid)
+    obj = download_json_from(msgid)
 
     while "article_list" in obj["getalbum_resp"]:
-        write(obj)
+        write(obj, json_dir)
         time.sleep(10)
 
-        f = list(sorted(glob.glob("generated_json/*.json")))
-        latest = read_path(Path(f[0]))
-
-        r = json.loads(latest)
+        r = get_latest_json_file_content(json_dir=json_dir)
         msgid = get_last_msgid(r)
-        obj = get(msgid)
+        obj = download_json_from(msgid)
 
     print("finished")
