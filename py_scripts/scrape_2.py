@@ -2,7 +2,7 @@ from pathlib import Path
 import requests
 import json
 import time
-from scrape_1 import write_path, read_path
+from .scrape_1 import write_path, read_path
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15"
@@ -69,7 +69,7 @@ def write(obj):
     )
 
 
-if __name__ == "__main__":
+def scrape_2():
     import glob
 
     f = list(sorted(glob.glob("generated_json/*.json"), reverse=True))

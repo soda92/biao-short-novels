@@ -1,10 +1,10 @@
 from pathlib import Path
-import requests  # noqa: F401
+import requests
 import glob
 from bs4 import BeautifulSoup
 import json
 import time
-from scrape_1 import read_path, write_path, clean_file_dir  # noqa: F401
+from sodatools import read_path, write_path
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15"
@@ -32,7 +32,7 @@ title = '$title'
     return p
 
 
-if __name__ == "__main__":
+def scrape_3():
     # clean_file_dir(Path("generated_markdown/a.md"))
 
     G_count = 0

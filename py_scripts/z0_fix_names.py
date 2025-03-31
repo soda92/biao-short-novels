@@ -1,16 +1,17 @@
 import glob
 import json
 from pathlib import Path
-from scrape_1 import read_path, write_path
+from sodatools import read_path, write_path, str_path
 
-if __name__ == "__main__":
+def fix_names(json_dir: Path, markdown_dir: Path, dest_dir: Path):
     # clean_file_dir(Path("generated_markdown/a.md"))
 
     SEQ = 0
-    files = list(sorted(glob.glob("generated_json/*.json"), reverse=True))
+    files = list(sorted(glob.glob("generated_json/*.json", root_dir=str_path(json_dir)), reverse=True))
 
     for file in files:
-        obj1 = json.loads(read_path(Path(file)))
+        file_p = json_dir.joinpath(file)
+        obj1 = json.loads(read_path(file_p))
         for article in obj1["getalbum_resp"]["article_list"]:
             title = article["title"]
             new_title = title

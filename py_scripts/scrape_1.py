@@ -1,24 +1,10 @@
 from pathlib import Path
 import re
-import shutil
 import requests
+from sodatools import write_path
 
 
-def clean_file_dir(file: Path):
-    if file.parent.exists():
-        shutil.rmtree(file.parent)
-    file.parent.mkdir(exist_ok=True)
-
-
-def read_path(file: Path):
-    return file.read_text(encoding="utf8")
-
-
-def write_path(file: Path, content: str):
-    file.write_text(content, encoding="utf8")
-
-
-def get():
+def get(dest: Path):
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15"
     }
@@ -33,16 +19,11 @@ def get():
     )
 
     assert r.status_code == 200
-
-    dest = Path("generated_html/start.html")
-    clean_file_dir(dest)
     write_path(dest, r.content.decode())
 
 
-if __name__ == "__main__":
-    get()
-
-    content = Path("generated_html/start.html").read_text(encoding="utf8")
+def convert_html_to_json(html_file: Path, json_dir: Path):
+    content = html_file.read_text(encoding="utf8")
 
     pattern = (
         '<span class="js_article_create_time album__item-info-item">([0-9]*)</span>'
@@ -102,6 +83,14 @@ if __name__ == "__main__":
 
     print(structure)
 
-    dst = Path("generated_json").joinpath(f"{msgid}.json")
-    clean_file_dir(dst)
+    dst = json_dir.joinpath(f"{msgid}.json")
     write_path(dst, structure)
+
+
+def scrape_1():
+    C = Path(__file__).resolve().parent
+    R = C.parent
+    get(R.joinpath("generated_html/start.html"))
+    convert_html_to_json(
+        R.joinpath("generated_html/start.html"), R.joinpath("generated_json")
+    )
