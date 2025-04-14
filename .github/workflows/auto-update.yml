@@ -20,6 +20,7 @@ jobs:
       - run: git checkout -b update
       - run: git add .
       - run: git commit -m "update"
+      - run: git push -u origin update
       - name: pull-request
         uses: diillson/auto-pull-request@latest
         with:
