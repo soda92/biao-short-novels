@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   auto-fetch:
@@ -17,6 +18,8 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - run: uv sync
+
+      - run: git checkout -b update-scraped-content
 
       - name: Scrape content
         id: scrape
@@ -29,31 +32,34 @@ jobs:
             echo "new_content=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Compare with previous content (example - adjust to your method)
-        id: compare
+      - name: Close existing open PRs
         if: ${{ steps.scrape.outputs.new_content == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          HEAD_BRANCH: update-scraped-content # Adjust if your branch name is different
         run: |
-          # Logic to compare new_content.json with the previous content
-          # Example:
-          # previous_content=$(git show origin/previous-content-branch:content.json)
-          # if [[ "$(cat new_content.json)" == "$previous_content" ]]; then
-          #   echo "new_content=false" >> "$GITHUB_OUTPUT"
-          # else
-          #   echo "new_content=true" >> "$GITHUB_OUTPUT"
-          # fi
-          # For this example, let's assume your scraper already handles this
-          echo "Content compared (adjust logic here)"
+          .venv/bin/python close-existing-prs.py
 
       - name: Commit and push changes
-        if: ${{ steps.scrape.outputs.new_content == 'true' }} # Or ${{ steps.compare.outputs.new_content == 'true' }} depending on your comparison logic
+        if: ${{ steps.scrape.outputs.new_content == 'true' }}
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "GitHub Actions Bot"
-          git add content generated_html generated_json generated_markdown # Or whatever files were updated
+          git add content generated_html generated_json generated_markdown
           git commit -m "Update scraped content"
-          git push origin main # Or your main branch name
+          git push origin update-scraped-content # Or your main branch name
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create PR
+        if: ${{ steps.scrape.outputs.new_content == 'true' }}
+        uses: diillson/auto-pull-request@v1.0.1
+        with:
+          source_branch: "update-scraped-content"                   # If blank, default: triggered branch
+          destination_branch: "main"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: No new content detected
         if: ${{ steps.scrape.outputs.new_content == 'false' }} # Or ${{ steps.compare.outputs.new_content == 'false' }}
