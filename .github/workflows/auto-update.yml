@@ -17,17 +17,44 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - run: uv sync
-      - run: .venv/bin/scrape_biao
-      - run: git config --global user.name githubactions
-      - run: git config --global user.emal actions@github.com
-      - run: git checkout -b update
-      - run: git add .
-      - run: git commit -m "update"
-      - run: git push -u origin update
+
+      - name: Scrape content
+        id: scrape
+        run: |
+          .venv/bin/scrape_biao
+          # Example: Check if the new content file is empty or contains specific markers
+          if [ -s new_content.json ] && ! grep -q "No new content found" new_content.json; then
+            echo "new_content=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "new_content=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Compare with previous content (example - adjust to your method)
+        id: compare
+        if: ${{ steps.scrape.outputs.new_content == 'true' }}
+        run: |
+          # Logic to compare new_content.json with the previous content
+          # Example:
+          # previous_content=$(git show origin/previous-content-branch:content.json)
+          # if [[ "$(cat new_content.json)" == "$previous_content" ]]; then
+          #   echo "new_content=false" >> "$GITHUB_OUTPUT"
+          # else
+          #   echo "new_content=true" >> "$GITHUB_OUTPUT"
+          # fi
+          # For this example, let's assume your scraper already handles this
+          echo "Content compared (adjust logic here)"
+
+      - name: Commit and push changes
+        if: ${{ steps.scrape.outputs.new_content == 'true' }} # Or ${{ steps.compare.outputs.new_content == 'true' }} depending on your comparison logic
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "GitHub Actions Bot"
+          git add content generated_html generated_json generated_markdown # Or whatever files were updated
+          git commit -m "Update scraped content"
+          git push origin main # Or your main branch name
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: pull-request
-        uses: diillson/auto-pull-request@latest
-        with:
-            destination_branch: "main"
-            github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: No new content detected
+        if: ${{ steps.scrape.outputs.new_content == 'false' }} # Or ${{ steps.compare.outputs.new_content == 'false' }}
+        run: echo "No new content found. Workflow will terminate early."
