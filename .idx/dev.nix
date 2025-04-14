@@ -8,6 +8,7 @@
     pkgs.hugo
     pkgs.go
     pkgs.python3
+    pkgs.uv
   ];
 
   # Sets environment variables in the workspace
