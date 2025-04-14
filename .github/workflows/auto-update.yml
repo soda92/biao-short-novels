@@ -18,6 +18,6 @@ jobs:
       - run: git add .
       - run: git commit -m "update"
       - name: pull-request
-      - uses: diillson/auto-pull-request@latest
+        uses: diillson/auto-pull-request@latest
         with:
             destination_branch: "main"
