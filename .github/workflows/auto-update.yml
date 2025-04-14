@@ -49,7 +49,8 @@ jobs:
           git config --local user.name "GitHub Actions Bot"
           git add content generated_html generated_json generated_markdown
           git commit -m "Update scraped content"
-          git push origin update-scraped-content # Or your main branch name
+          git push origin --delete update-scraped-content || true
+          git push origin -u update-scraped-content # Or your main branch name
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
