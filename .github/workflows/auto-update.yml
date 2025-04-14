@@ -21,6 +21,8 @@ jobs:
       - run: git add .
       - run: git commit -m "update"
       - run: git push -u origin update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: pull-request
         uses: diillson/auto-pull-request@latest
         with:
