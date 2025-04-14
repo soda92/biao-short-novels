@@ -90,7 +90,7 @@ def convert_html_to_json(html_file: Path, json_dir: Path):
         Path("new_content.json").write_text("No new content found")
         exit(0)
     else:
-        Path("new_content.json").write("mmm")
+        Path("new_content.json").write_text("mmm")
     dst = json_dir.joinpath(f"{msgid}.json")
     write_path(dst, structure)
 
