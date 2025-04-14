@@ -1,0 +1,31 @@
+
+    {
+    "base_resp": {
+        "exportkey_token": "",
+        "ret": 0
+    },
+    "getalbum_resp": {
+        "article_list": [
+        {
+            "cover_img_1_1": "https://mmbiz.qpic.cn/mmbiz_jpg/4q8J3pWcWxZRJjlqg6Pb5zfAB5mXooaGgScmKypgeIKhlgljkpfML1hSRB1Dxj1pAVV23gRFLHz2FlRybdeibZQ/300",
+            "cover_theme_color": {
+            "b": "30",
+            "g": "35",
+            "r": "31"
+            },
+            "create_time": "1744540551",
+            "is_pay_subscribe": "0",
+            "is_read": "0",
+            "item_show_type": "0",
+            "itemidx": "1",
+            "key": "3885769611_2247484415_1",
+            "msgid": "2247484477",
+            "pos_num": "76",
+            "title": "87 | 微型小说《求见大人》",
+            "tts_is_ban": "0",
+            "url": "http://mp.weixin.qq.com/s?__biz=Mzg4NTc2OTYxMQ==&mid=2247484477&idx=1&sn=1b2beb2701cafab57f1f98d64c2a99aa&chksm=cfa290d9f8d519cf5ae03d764e53ab00f92b15c9f2e6e5d9096ddd6ebe420a0e31c21fc5d041#rd",
+            "user_read_status": "0"
+        }
+        ]
+    }
+    }
