@@ -3,7 +3,8 @@
 from pathlib import Path
 import re
 import requests
-from sodatools import write_path
+from sodatools import write_path, str_path
+import glob
 
 
 def get(dest: Path):
@@ -84,7 +85,12 @@ def convert_html_to_json(html_file: Path, json_dir: Path):
     )
 
     print(structure)
-
+    last_file = list(sorted(glob.glob("*.json", root_dir=str_path(json_dir)), reverse=True))[0]
+    if msgid == last_file[:-5]:
+        Path("new_content.json").write_text("No new content found")
+        exit(0)
+    else:
+        Path("new_content.json").write_text("mmm")
     dst = json_dir.joinpath(f"{msgid}.json")
     write_path(dst, structure)
 

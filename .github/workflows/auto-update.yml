@@ -1,0 +1,68 @@
+on:
+  schedule:
+    - cron: '45 4 * * *'
+  workflow_dispatch: # Optional: Allows manual triggering
+  push:
+    branches:
+     - autofetch
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - run: uv sync
+
+      - run: git checkout -b update-scraped-content
+
+      - name: Scrape content
+        id: scrape
+        run: |
+          .venv/bin/scrape_biao
+          # Example: Check if the new content file is empty or contains specific markers
+          if [ -s new_content.json ] && ! grep -q "No new content found" new_content.json; then
+            echo "new_content=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "new_content=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Close existing open PRs
+        if: ${{ steps.scrape.outputs.new_content == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          HEAD_BRANCH: update-scraped-content # Adjust if your branch name is different
+        run: |
+          .venv/bin/python close-existing-prs.py
+
+      - name: Commit and push changes
+        if: ${{ steps.scrape.outputs.new_content == 'true' }}
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "GitHub Actions Bot"
+          git add content generated_html generated_json generated_markdown
+          git commit -m "Update scraped content"
+          git push origin --delete update-scraped-content || true
+          git push origin -u update-scraped-content # Or your main branch name
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create PR
+        if: ${{ steps.scrape.outputs.new_content == 'true' }}
+        uses: diillson/auto-pull-request@v1.0.1
+        with:
+          pr_title: "Auto update scraped content"
+          source_branch: "update-scraped-content"                   # If blank, default: triggered branch
+          destination_branch: "main"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: No new content detected
+        if: ${{ steps.scrape.outputs.new_content == 'false' }} # Or ${{ steps.compare.outputs.new_content == 'false' }}
+        run: echo "No new content found. Workflow will terminate early."
