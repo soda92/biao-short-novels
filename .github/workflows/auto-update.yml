@@ -1,0 +1,23 @@
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '30 5,17 * * *'
+  push:
+    branches:
+     - autofetch
+
+jobs:
+  auto-fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m py_scripts
+      - run: git config --local user.name githubactions
+      - run: git config --local user.emal actions@github.com
+      - run: git checkout -b update
+      - run: git add .
+      - run: git commit -m "update"
+      - name: pull-request
+      - uses: diillson/auto-pull-request@latest
+        with:
+            destination_branch: "main"
