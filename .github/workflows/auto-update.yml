@@ -20,9 +20,8 @@ jobs:
       - run: git checkout -b update
       - run: git add .
       - run: git commit -m "update"
+      - run: git remove set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/soda92/biao-short-novels.git
       - run: git push -u origin update
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: pull-request
         uses: diillson/auto-pull-request@latest
         with:
