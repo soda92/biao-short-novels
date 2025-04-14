@@ -24,9 +24,8 @@ jobs:
       - run: git add .
       - run: git commit -m "update"
       - run: git push -u origin update
-        with:
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: pull-request
         uses: diillson/auto-pull-request@latest
         with:
