@@ -1,0 +1,31 @@
+
+    {
+    "base_resp": {
+        "exportkey_token": "",
+        "ret": 0
+    },
+    "getalbum_resp": {
+        "article_list": [
+        {
+            "cover_img_1_1": "https://mmbiz.qpic.cn/mmbiz_jpg/4q8J3pWcWxbkfic18AM40GftWicv02occRicHtYDFdnkolqviabhedGOM3g35EvIkBB45BajRWeHgqEDhtRCCOSa8w/300",
+            "cover_theme_color": {
+            "b": "30",
+            "g": "35",
+            "r": "31"
+            },
+            "create_time": "1746783413",
+            "is_pay_subscribe": "0",
+            "is_read": "0",
+            "item_show_type": "0",
+            "itemidx": "1",
+            "key": "3885769611_2247484415_1",
+            "msgid": "2247484482",
+            "pos_num": "76",
+            "title": "88 | 微型小说《求雨》",
+            "tts_is_ban": "0",
+            "url": "http://mp.weixin.qq.com/s?__biz=Mzg4NTc2OTYxMQ==&mid=2247484482&idx=1&sn=674ab6c4bcc27e37346018c81b4dc525&chksm=cfa290a6f8d519b013ed101520f7568aa38f1a422b7d5c2871f284c9cb6245f26970be2cd970#rd",
+            "user_read_status": "0"
+        }
+        ]
+    }
+    }
