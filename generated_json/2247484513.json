@@ -1,0 +1,31 @@
+
+    {
+    "base_resp": {
+        "exportkey_token": "",
+        "ret": 0
+    },
+    "getalbum_resp": {
+        "article_list": [
+        {
+            "cover_img_1_1": "https://mmbiz.qpic.cn/mmbiz_jpg/4q8J3pWcWxbzt2Onyx23NTpyEia7nwvIpe13OWn0X0NsM8jV2GniaTHdWf2w8ODcBItCzStTe13Q3vRrWJK1Ijkg/300",
+            "cover_theme_color": {
+            "b": "30",
+            "g": "35",
+            "r": "31"
+            },
+            "create_time": "1750679427",
+            "is_pay_subscribe": "0",
+            "is_read": "0",
+            "item_show_type": "0",
+            "itemidx": "1",
+            "key": "3885769611_2247484415_1",
+            "msgid": "2247484513",
+            "pos_num": "76",
+            "title": "94 | 微型小说《遗嘱是这样写的》",
+            "tts_is_ban": "0",
+            "url": "http://mp.weixin.qq.com/s?__biz=Mzg4NTc2OTYxMQ==&mid=2247484513&idx=1&sn=a407f00dfa2c8cda94c83e7c372276a8&chksm=cfa29085f8d51993d137c7ba9ad94481aaa9c126ce7fb658cf862217ef535a00ed49946e13fa#rd",
+            "user_read_status": "0"
+        }
+        ]
+    }
+    }
