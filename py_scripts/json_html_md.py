@@ -55,9 +55,11 @@ def json_html_md(json_dir: Path, html_dir: Path, markdown_dir: Path):
             msgid = article["msgid"]
             date = article["create_time"]
             import datetime
+            import pytz
 
-            date = datetime.datetime.fromtimestamp(int(date))
-            date = date.isoformat() + "+08:00"
+            shanghai_tz = pytz.timezone('Asia/Shanghai')
+            date = datetime.datetime.fromtimestamp(int(date), tz=shanghai_tz).strftime('%Y-%m-%dT%H:%M:%S%z')
+            date = date[:-2] + ':' + date[-2:] # Add colon to timezone offset
 
             body = fetch_url_and_convert_to_md(url, msgid, html_dir=html_dir)
             body = body.replace("$date", date)

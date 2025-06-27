@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "beautifulsoup4>=4.13.3",
+    "pytz>=2025.2",
     "requests>=2.32.3",
     "sodatools>=2025.2.16.0",
 ]
