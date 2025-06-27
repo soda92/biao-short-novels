@@ -14,15 +14,16 @@ headers = {
 
 
 def fetch_url_and_convert_to_md(url, msgid, html_dir: Path):
-    r = requests.get(url=url, headers=headers)
-    retry = 1
-    while r.status_code != 200 and retry < 5:
-        retry += 1
+    if not html_dir.joinpath(f"{msgid}.html").exists():
         r = requests.get(url=url, headers=headers)
-    if r.status_code != 200:
-        print(r"fetch {url} error")
-        exit(-1)
-    html_dir.joinpath(f"{msgid}.html").write_bytes(r.content)
+        retry = 1
+        while r.status_code != 200 and retry < 5:
+            retry += 1
+            r = requests.get(url=url, headers=headers)
+        if r.status_code != 200:
+            print(r"fetch {url} error")
+            exit(-1)
+        html_dir.joinpath(f"{msgid}.html").write_bytes(r.content)
 
     html = read_path(html_dir.joinpath(f"{msgid}.html"))
     soup = BeautifulSoup(html, "html.parser")
@@ -47,8 +48,7 @@ def json_html_md(json_dir: Path, html_dir: Path, markdown_dir: Path):
         for article in obj1["getalbum_resp"]["article_list"]:
             title = article["title"]
             md_name = title.replace(" | ", "-")
-            if markdown_dir.joinpath(f"{md_name}.md").exists():
-                continue
+
             url = article["url"]
             msgid = article["msgid"]
             date = article["create_time"]
