@@ -1,3 +1,5 @@
+name: Auto update scraped content
+
 on:
   schedule:
     - cron: '45 4 * * *'
